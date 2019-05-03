@@ -19,7 +19,7 @@ class CreateBlogCategoriesTable extends Migration
 
             $table->string('slug')->unique();
             $table->string('title');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
