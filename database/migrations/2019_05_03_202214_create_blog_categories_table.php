@@ -24,7 +24,6 @@ class CreateBlogCategoriesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('parent_id')->references('id')->on('blog_categories');
         });
     }
 
