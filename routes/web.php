@@ -14,3 +14,11 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::group(['namespace' => 'Blog', 'prefix' => 'blog'], function () { // для контроллеров в неймспейсе Blog используем префикс blog
+    Route::resource('posts', 'PostController')->names('blog.posts'); // для запросов по адресу posts юзаем PostController, даем ему имя blog.posts
+});
+
+
+
+//Route::resource('rest', 'RestTestController')->names('restTest');
