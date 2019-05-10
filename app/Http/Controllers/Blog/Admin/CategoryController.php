@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Blog\Admin;
 
+use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Models\BlogCategory;
 use http\Exception\BadConversionException;
 use Illuminate\Http\Request;
@@ -62,8 +63,20 @@ class CategoryController extends BaseController
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(BlogCategoryUpdateRequest $request, $id)
     {
+        //$validateData = $this->validate($request, $rules); //валидация через контроллер
+
+        /*$validator = \Validator::make($request->all(), $rules);
+        $validateData[] = $validator->passes(); // проверяет и возвращает тру или фолс
+        //$validateData[] = $validator->validate();
+        $validateData[] = $validator->valid();
+        $validateData[] = $validator->failed();
+        $validateData[] = $validator->errors();
+        $validateData[] = $validator->fails();
+
+        dd($validateData);*/
+
         $item = BlogCategory::find($id);
         if (empty($item)) {
             return back()                                                   // Переход обратно, если итем пришел пустой
