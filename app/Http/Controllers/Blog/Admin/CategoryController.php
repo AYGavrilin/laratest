@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Blog\Admin;
 
+use App\Models\BlogCategory;
+use http\Exception\BadConversionException;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
-class CategoryController extends Controller
+class CategoryController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +15,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $paginator = BlogCategory::paginate(5);
+
+        return view('blog.admin.categories.index', compact('paginator'));
     }
 
     /**
@@ -24,62 +27,61 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('blog.admin.categories.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        dd(__METHOD__, $request);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        //
+        $item = BlogCategory::findOrFail($id);
+        $categoryList = BlogCategory::all();
+
+        return view('blog.admin.categories.edit', compact('item', 'categoryList'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        //
-    }
+        $item = BlogCategory::find($id);
+        if (empty($item)) {
+            return back()                                                   // Переход обратно, если итем пришел пустой
+                ->withErrors(['msg' => "Запись с id = [{$id}] не найдена"]) // Записываем ошибки в сессию
+                ->withInput();                                              // Возвращаем введенные пользователем данные
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $data = $request->all(); // Закидываем в дату все, что есть в реквесте
+        $result = $item->fill($data)->save(); // Перезаписываем в итеме методом fill данные, которые пришли с запросом, сохраняем. Возвращается true или false
+
+        if ($result) {
+            return redirect()
+                ->route('blog.admin.categories.edit', $item->id) //Маршрут редиректа с идентификатором
+                ->with(['success' => 'Успешно сохранено']); // Через сессию отправляем инфо об успешной записи
+        } else {
+            return back()
+                ->withErrors(['msg' => 'Ошибка сохранения'])
+                ->withInput();
+        }
     }
 }
