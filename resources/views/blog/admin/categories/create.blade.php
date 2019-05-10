@@ -1,1 +1,1 @@
-<h1>create</h1>
+@include('blog.admin.categories.edit')
