@@ -6,12 +6,28 @@ use App\Http\Requests\BlogCategoryCreateRequest;
 use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Models\BlogCategory;
 use App\Repositories\BlogCategoryRepository;
-use http\Exception\BadConversionException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CategoryController extends BaseController
 {
+    /**
+     * @var BlogCategoryRepository
+     */
+    private $blogCategoryRepository;
+
+
+    /**
+     * CategoryController constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->blogCategoryRepository = app(BlogCategoryRepository::class);
+
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +36,7 @@ class CategoryController extends BaseController
     public function index()
     {
         $paginator = BlogCategory::paginate(5);
+        $paginator = $this->blogCategoryRepository->getAllWithPaginate(10);
 
         return view('blog.admin.categories.index', compact('paginator'));
     }
@@ -32,7 +49,7 @@ class CategoryController extends BaseController
     public function create()
     {
         $item = new BlogCategory();
-        $categoryList = BlogCategory::all();
+        $categoryList = $this->blogCategoryRepository->getForComboBox();
 
         return view('blog.admin.categories.create', compact('item', 'categoryList'));
     }
